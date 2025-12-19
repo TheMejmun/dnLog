@@ -1,3 +1,4 @@
 # dnTemplate
 
 ## Dependencies:
+- Requires dnScheduler

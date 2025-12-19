@@ -6,7 +6,6 @@
 #define DNLOG_LOG_H
 
 #include "dnScheduler/scheduler.h"
-
 #include <string>
 #include <sstream>
 
