@@ -5,6 +5,7 @@
 #ifndef DNLOG_LOG_H
 #define DNLOG_LOG_H
 
+#include "dnLog/format.h"
 #include "dnScheduler/scheduler.h"
 #include <string>
 #include <sstream>
@@ -23,24 +24,16 @@ namespace dn::log {
             ERROR
         };
 
-        template<typename... ARGS>
-        std::string format(ARGS &&... args) {
-            std::stringstream stream{};
-            (
-                    (stream << args << " "),
-                    ...
-            );
-            return stream.str();
-        }
-
         void log(Level level, const std::string &message);
 
         template<typename... ARGS>
         void logFormattedAsync(Level level, ARGS &&... args) {
-            internal::scheduler.queue({[=]() {
-                auto formatted = internal::format(args...);
-                internal::log(level, formatted);
-            }});
+            scheduler.queue({
+                [=]() {
+                    auto formatted = dn::format(args...);
+                    internal::log(level, formatted);
+                }
+            });
         }
     }
 
@@ -55,35 +48,35 @@ namespace dn::log {
     bool traceEnabled();
 
     template<typename... ARGS>
-    inline void i(ARGS &&... args) {
+    void i(ARGS &&... args) {
         if (infoEnabled()) {
             internal::logFormattedAsync(internal::INFO, args...);
         }
     }
 
     template<typename... ARGS>
-    inline void d(ARGS &&... args) {
+    void d(ARGS &&... args) {
         if (debugEnabled()) {
             internal::logFormattedAsync(internal::DEBUG, args...);
         }
     }
 
     template<typename... ARGS>
-    inline void v(ARGS &&... args) {
+    void v(ARGS &&... args) {
         if (verboseEnabled()) {
             internal::logFormattedAsync(internal::VERBOSE, args...);
         }
     }
 
     template<typename... ARGS>
-    inline void t(ARGS &&... args) {
+    void t(ARGS &&... args) {
         if (traceEnabled()) {
             internal::logFormattedAsync(internal::TRACE, args...);
         }
     }
 
     template<typename... ARGS>
-    inline void e(ARGS &&... args) {
+    void e(ARGS &&... args) {
         internal::logFormattedAsync(internal::ERROR, args...);
     }
 
